@@ -1,8 +1,9 @@
 {
   "tasks": {
-    "start": "deno run --allow-net --allow-env src/app.ts"
+    "start": "deno run --allow-net --allow-env src/server.ts"
   },
   "deploy": {
-    "entrypoint": "src/app.ts"
+    "entrypoint": "src/server.ts"
   }
+
 }
