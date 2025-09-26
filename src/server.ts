@@ -1,14 +1,15 @@
-
 // deno run --allow-env --allow-net server.ts
 import { serve } from "https://deno.land/std/http/server.ts";
+import config from "./config.json" assert { type: "json" };
 
-// ========== 环境变量 ==========
-const UUID: string = Deno.env.get("UUID") || "ee4ff9db-66e5-497c-b09b-748cbcf704d6";
-const SUB_PATH: string = Deno.env.get("SUB_PATH") || "sub";     // 订阅路径
-const XPATH: string = Deno.env.get("XPATH") || "xhttp";         // 节点路径
-const DOMAIN: string = Deno.env.get("DOMAIN") || "dihao.maijiamei.deno.net";   // 绑定的域名或IP
-const NAME: string = Deno.env.get("NAME") || "Deno";            // 节点名称
-const PORT: number = parseInt(Deno.env.get("PORT") || "3000");
+// ========== 环境变量或配置文件 ==========
+// 优先读取环境变量，如果没有则使用 config.json
+const UUID: string = Deno.env.get("UUID") || config.UUID;
+const SUB_PATH: string = Deno.env.get("SUB_PATH") || config.SUB_PATH;
+const XPATH: string = Deno.env.get("XPATH") || config.XPATH;
+const DOMAIN: string = Deno.env.get("DOMAIN") || config.DOMAIN;
+const NAME: string = Deno.env.get("NAME") || config.NAME;
+const PORT: number = parseInt(Deno.env.get("PORT") || String(config.PORT));
 
 // ========== 工具函数 ==========
 function parse_uuid(uuid: string): Uint8Array {
