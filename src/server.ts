@@ -1,7 +1,7 @@
 // deno run --allow-env --allow-net --allow-read server.ts
 import { serve } from "https://deno.land/std/http/server.ts";
 
-// ========== 配置读取 ==========
+// 定义配置接口
 interface Config {
   UUID: string;
   SUB_PATH: string;
@@ -11,12 +11,13 @@ interface Config {
   PORT: number;
 }
 
-// 使用 async IIFE 读取 JSON 并启动服务器
+// 用异步函数读取 JSON 文件并启动服务器
 (async () => {
+  // 读取 config.json
   const configText = await Deno.readTextFile("./config.json");
   const config: Config = JSON.parse(configText);
 
-  // 优先读取环境变量，否则使用 config.json
+  // 使用环境变量优先，否则使用 config.json
   const UUID: string = Deno.env.get("UUID") || config.UUID;
   const SUB_PATH: string = Deno.env.get("SUB_PATH") || config.SUB_PATH;
   const XPATH: string = Deno.env.get("XPATH") || config.XPATH;
@@ -24,7 +25,7 @@ interface Config {
   const NAME: string = Deno.env.get("NAME") || config.NAME;
   const PORT: number = parseInt(Deno.env.get("PORT") || String(config.PORT));
 
-  // ========== 工具函数 ==========
+  // 工具函数
   function parse_uuid(uuid: string): Uint8Array {
     uuid = uuid.replaceAll("-", "");
     const r = new Uint8Array(16);
@@ -41,7 +42,7 @@ interface Config {
     return true;
   }
 
-  // ========== HTTP 服务 ==========
+  // 启动 HTTP 服务
   serve(async (req) => {
     const url = new URL(req.url);
 
@@ -57,7 +58,7 @@ interface Config {
       return new Response(base64Content + "\n", { status: 200 });
     }
 
-    // VLESS 转发（简化：这里只是校验 UUID，不做完整代理逻辑）
+    // VLESS 转发（简化版，只校验 UUID）
     const pathMatch = url.pathname.match(new RegExp(`/${XPATH}/([^/]+)`));
     if (pathMatch) {
       const clientUUID = pathMatch[1];
@@ -72,4 +73,3 @@ interface Config {
 
   console.log(`✅ Deno VLESS server running on http://localhost:${PORT}`);
 })();
-
